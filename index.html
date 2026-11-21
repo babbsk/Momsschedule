@@ -131,9 +131,10 @@
 <script>
 /* ====== EDIT HERE IF DATES CHANGE ====== */
 const START_DATE = "2026-11-19";      // first treatment
-const TOTAL_TREATMENTS = 45;
-const DAYS_OFF = [                     // holidays with no treatment (weekends are skipped automatically)
+const LAST_DATE  = "2027-01-08";      // last treatment (bell day)
+const DAYS_OFF = [                     // weekdays with no treatment (weekends are skipped automatically)
   "2026-11-26",  // Thanksgiving
+  "2026-11-27",  // Black Friday
   "2026-12-25",  // Christmas
   "2027-01-01"   // New Year's Day
 ];
@@ -146,11 +147,13 @@ const offSet = new Set(DAYS_OFF);
 // Build the treatment schedule
 const treatments = [];
 let cur = parse(START_DATE);
-while (treatments.length < TOTAL_TREATMENTS) {
+const lastDay = parse(LAST_DATE);
+while (cur <= lastDay) {
   const wd = cur.getDay();
   if (wd !== 0 && wd !== 6 && !offSet.has(key(cur))) treatments.push(new Date(cur));
   cur.setDate(cur.getDate() + 1);
 }
+const TOTAL_TREATMENTS = treatments.length;
 const treatSet = new Set(treatments.map(key));
 const bell = treatments[treatments.length - 1];
 
