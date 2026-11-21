@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Days Until Chene Rings the Bell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#e6f6fd; --mist:#cdeefb; --baby:#a9def5; --sea:#6cc3e8;
+    --deep:#2e8fbf; --navy:#1d5f82; --sand:#f6e7cc; --sand2:#efd9b0;
+    --foam:#ffffff; --coral:#f4a38c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Nunito',system-ui,sans-serif;color:var(--navy);
+    background:linear-gradient(180deg,var(--sky) 0%,var(--mist) 45%,var(--baby) 100%);
+    min-height:100vh;overflow-x:hidden;
+  }
+  .sun{position:absolute;top:28px;right:8%;width:90px;height:90px;border-radius:50%;
+    background:radial-gradient(circle,#fff6d8 0%,#ffe9a8 60%,rgba(255,233,168,0) 72%);}
+  header{text-align:center;padding:56px 20px 10px;position:relative}
+  h1{font-family:'Pacifico',cursive;font-weight:400;font-size:clamp(2rem,6vw,3.4rem);
+    color:var(--deep);line-height:1.25;text-shadow:0 2px 0 #fff}
+  .sub{margin-top:8px;font-size:1.05rem;opacity:.85}
+  main{max-width:880px;margin:0 auto;padding:10px 18px 0;position:relative;z-index:2}
+
+  .hero{background:rgba(255,255,255,.72);backdrop-filter:blur(6px);border-radius:28px;
+    padding:34px 20px 28px;text-align:center;box-shadow:0 10px 30px rgba(46,143,191,.15);margin-top:18px}
+  .big{font-size:clamp(5rem,20vw,9rem);font-weight:800;line-height:1;color:var(--deep);
+    background:linear-gradient(180deg,var(--sea),var(--navy));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .biglabel{font-size:1.3rem;font-weight:600;margin-top:6px}
+  .bellday{margin-top:10px;font-size:1rem;opacity:.85}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+  .stat{background:var(--sky);border-radius:18px;padding:14px 8px}
+  .stat b{display:block;font-size:2rem;color:var(--deep)}
+  .stat span{font-size:.85rem}
+
+  .progress{margin:24px auto 4px;max-width:560px}
+  .track{height:22px;border-radius:999px;background:var(--sand);overflow:hidden;position:relative;
+    box-shadow:inset 0 2px 4px rgba(0,0,0,.08)}
+  .fill{height:100%;border-radius:999px;width:0;transition:width 1.4s ease;
+    background:repeating-linear-gradient(120deg,var(--sea) 0 18px,var(--baby) 18px 36px)}
+  .ptext{margin-top:8px;font-size:.95rem}
+
+  .message{margin-top:18px;font-size:1.1rem;font-style:italic;color:var(--deep)}
+
+  h2{font-family:'Pacifico',cursive;font-weight:400;color:var(--deep);text-align:center;
+    font-size:1.8rem;margin:40px 0 6px}
+  .legend{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 18px;font-size:.85rem;margin-bottom:14px}
+  .legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+
+  .months{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+  .month{background:rgba(255,255,255,.75);border-radius:20px;padding:14px;box-shadow:0 6px 18px rgba(46,143,191,.1)}
+  .month h3{text-align:center;margin-bottom:8px;font-size:1.05rem}
+  .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .dow{font-size:.7rem;text-align:center;opacity:.6;font-weight:700}
+  .d{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    font-size:.82rem;font-weight:600;position:relative}
+  .d.empty{visibility:hidden}
+  .d.off{color:#9cb8c6}
+  .d.holiday{background:#fdeee8;color:var(--coral)}
+  .d.upcoming{background:var(--mist);color:var(--navy)}
+  .d.done{background:var(--sea);color:#fff}
+  .d.done::after{content:"🐚";position:absolute;font-size:.6rem;bottom:1px;right:2px}
+  .d.today{outline:3px solid var(--navy);outline-offset:-1px}
+  .d.bell{background:linear-gradient(135deg,#ffe9a8,#f6c96b);color:var(--navy)}
+  .d.bell::after{content:"🔔";position:absolute;font-size:.65rem;bottom:1px;right:2px}
+
+  footer{text-align:center;padding:30px 20px 150px;font-size:.9rem;opacity:.8;position:relative;z-index:2}
+
+  .waves{position:fixed;left:0;bottom:0;width:100%;height:130px;z-index:1;pointer-events:none}
+  .waves svg{position:absolute;bottom:0;width:200%;height:100%}
+  .w1{animation:drift 14s linear infinite;opacity:.55}
+  .w2{animation:drift 9s linear infinite reverse;opacity:.75}
+  .w3{animation:drift 20s linear infinite}
+  @keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  .celebrate .big{font-size:clamp(3rem,12vw,5.5rem)}
+  @media (max-width:520px){.stat b{font-size:1.5rem}.stats{gap:8px}}
+  @media (prefers-reduced-motion:reduce){.w1,.w2,.w3{animation:none}.fill{transition:none}}
+</style>
+</head>
+<body>
+<div class="sun"></div>
+<header>
+  <h1>Days Until Chene<br>Rings the Bell</h1>
+  <p class="sub">One wave at a time 🌊</p>
+</header>
+
+<main>
+  <section class="hero" id="hero">
+    <div class="big" id="bigNum">–</div>
+    <div class="biglabel" id="bigLabel">treatments to go</div>
+    <div class="bellday" id="bellDay"></div>
+
+    <div class="stats">
+      <div class="stat"><b id="doneNum">–</b><span>treatments done</span></div>
+      <div class="stat"><b id="leftNum">–</b><span>days until bell day</span></div>
+      <div class="stat"><b id="totalNum">–</b><span>total treatments</span></div>
+    </div>
+
+    <div class="progress">
+      <div class="track"><div class="fill" id="fill"></div></div>
+      <div class="ptext" id="ptext"></div>
+    </div>
+    <div class="message" id="message"></div>
+  </section>
+
+  <h2>The Journey</h2>
+  <div class="legend">
+    <span><i style="background:var(--sea)"></i>Done</span>
+    <span><i style="background:var(--mist)"></i>Upcoming</span>
+    <span><i style="background:#fdeee8"></i>Holiday off</span>
+    <span><i style="background:linear-gradient(135deg,#ffe9a8,#f6c96b)"></i>Bell day</span>
+    <span><i style="background:transparent;outline:3px solid var(--navy);outline-offset:-3px"></i>Today</span>
+  </div>
+  <div class="months" id="months"></div>
+</main>
+
+<footer>Sending love, sunshine, and ocean breezes 💙</footer>
+
+<div class="waves" aria-hidden="true">
+  <svg class="w1" viewBox="0 0 1440 130" preserveAspectRatio="none"><path fill="#6cc3e8" d="M0,60 C120,20 240,100 360,60 C480,20 600,100 720,60 C840,20 960,100 1080,60 C1200,20 1320,100 1440,60 L1440,130 L0,130Z"/></svg>
+  <svg class="w2" viewBox="0 0 1440 130" preserveAspectRatio="none"><path fill="#a9def5" d="M0,80 C180,45 360,110 540,80 C720,45 900,110 1080,80 C1260,45 1350,100 1440,80 L1440,130 L0,130Z"/></svg>
+  <svg class="w3" viewBox="0 0 1440 130" preserveAspectRatio="none"><path fill="#f6e7cc" d="M0,108 C240,95 480,122 720,108 C960,95 1200,122 1440,108 L1440,130 L0,130Z"/></svg>
+</div>
+
+<script>
+/* ====== EDIT HERE IF DATES CHANGE ====== */
+const START_DATE = "2026-11-19";      // first treatment
+const TOTAL_TREATMENTS = 45;
+const DAYS_OFF = [                     // holidays with no treatment (weekends are skipped automatically)
+  "2026-11-26",  // Thanksgiving
+  "2026-12-25",  // Christmas
+  "2027-01-01"   // New Year's Day
+];
+/* ======================================= */
+
+const parse = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+const key = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const offSet = new Set(DAYS_OFF);
+
+// Build the treatment schedule
+const treatments = [];
+let cur = parse(START_DATE);
+while (treatments.length < TOTAL_TREATMENTS) {
+  const wd = cur.getDay();
+  if (wd !== 0 && wd !== 6 && !offSet.has(key(cur))) treatments.push(new Date(cur));
+  cur.setDate(cur.getDate() + 1);
+}
+const treatSet = new Set(treatments.map(key));
+const bell = treatments[treatments.length - 1];
+
+// Everything runs on Mountain Time. A treatment counts as done at 4 PM MT,
+// and the countdown ticks over at the same moment.
+const TIME_ZONE = "America/Denver";
+const ROLLOVER_HOUR = 16; // 4 PM
+function mtNow() {
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
+    timeZone: TIME_ZONE, year:"numeric", month:"numeric", day:"numeric", hour:"numeric", hourCycle:"h23"
+  }).formatToParts(new Date()).map(x => [x.type, x.value]));
+  const calendarDay = new Date(+p.year, +p.month - 1, +p.day);
+  const effective = new Date(calendarDay);
+  if (+p.hour >= ROLLOVER_HOUR) effective.setDate(effective.getDate() + 1);
+  return { calendarDay, effective };
+}
+const { calendarDay: mtToday, effective: today } = mtNow();
+const dayMs = 86400000;
+
+// If the page is left open, refresh it when the 6 PM rollover happens
+setInterval(() => { if (key(mtNow().effective) !== key(today)) location.reload(); }, 60000);
+const daysToBell = Math.round((bell - today) / dayMs);
+const done = treatments.filter(t => t < today).length;
+const left = TOTAL_TREATMENTS - done;
+const pct = Math.min(100, Math.round(done / TOTAL_TREATMENTS * 100));
+
+const fmt = d => d.toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" });
+
+// Hero
+const $ = id => document.getElementById(id);
+$("doneNum").textContent = done;
+$("leftNum").textContent = Math.max(0, daysToBell);
+$("totalNum").textContent = TOTAL_TREATMENTS;
+$("ptext").textContent = pct + "% of the way there";
+setTimeout(() => $("fill").style.width = pct + "%", 150);
+
+const messages = [
+  "Every wave brings her closer to shore.",
+  "Strong like the tide. 🌊",
+  "Salt air and sunshine are on the way.",
+  "Keep swimming — the beach is in sight. 🐚",
+  "Calm seas ahead."
+];
+
+if (daysToBell > 0) {
+  $("bigNum").textContent = left;
+  $("bigLabel").textContent = left === 1 ? "treatment to go" : "treatments to go";
+  $("bellDay").textContent = "🔔 Bell day: " + fmt(bell);
+  $("message").textContent = treatSet.has(key(today)) && key(today) === key(mtToday)
+    ? "Treatment day today — " + left + " to go, including today. You've got this! 💙"
+    : messages[today.getDate() % messages.length];
+} else if (daysToBell === 0) {
+  $("hero").classList.add("celebrate");
+  $("bigNum").textContent = "Today! 🔔";
+  $("bigLabel").textContent = "Chene rings the bell today!";
+  $("bellDay").textContent = fmt(bell);
+  $("message").textContent = "The last treatment! Ring it loud! 🎉🌊";
+} else {
+  $("hero").classList.add("celebrate");
+  $("bigNum").textContent = "She did it! 🎉";
+  $("bigLabel").textContent = "The bell has been rung";
+  $("bellDay").textContent = "Rang the bell on " + fmt(bell);
+  $("message").textContent = "All " + TOTAL_TREATMENTS + " treatments done. Time for the beach! 🏖️";
+}
+
+// Calendar months
+const monthsEl = $("months");
+const first = parse(START_DATE);
+let m = new Date(first.getFullYear(), first.getMonth(), 1);
+const lastMonth = new Date(bell.getFullYear(), bell.getMonth(), 1);
+while (m <= lastMonth) {
+  const box = document.createElement("div");
+  box.className = "month";
+  box.innerHTML = "<h3>" + m.toLocaleDateString("en-US", { month:"long", year:"numeric" }) + "</h3>";
+  const grid = document.createElement("div");
+  grid.className = "grid";
+  "SMTWTFS".split("").forEach(c => grid.insertAdjacentHTML("beforeend", '<div class="dow">'+c+'</div>'));
+  for (let i = 0; i < m.getDay(); i++) grid.insertAdjacentHTML("beforeend", '<div class="d empty"></div>');
+  const dim = new Date(m.getFullYear(), m.getMonth()+1, 0).getDate();
+  for (let day = 1; day <= dim; day++) {
+    const dt = new Date(m.getFullYear(), m.getMonth(), day);
+    const k = key(dt);
+    let cls = "d";
+    let title = "";
+    if (k === key(bell)) { cls += " bell"; title = "Bell day — last treatment!"; }
+    else if (treatSet.has(k)) { cls += dt < today ? " done" : " upcoming"; title = "Treatment " + (treatments.findIndex(t => key(t) === k) + 1); }
+    else if (offSet.has(k)) { cls += " holiday"; title = "Holiday — day off"; }
+    else cls += " off";
+    if (k === key(mtToday)) cls += " today";
+    grid.insertAdjacentHTML("beforeend", '<div class="'+cls+'" title="'+title+'">'+day+'</div>');
+  }
+  box.appendChild(grid);
+  monthsEl.appendChild(box);
+  m = new Date(m.getFullYear(), m.getMonth()+1, 1);
+}
+</script>
+</body>
+</html>
